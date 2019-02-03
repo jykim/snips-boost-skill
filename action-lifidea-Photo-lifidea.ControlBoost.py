@@ -7,6 +7,7 @@ from hermes_python.ontology import *
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 import io
+from picamera import PiCamera
 
 CONFIGURATION_ENCODING_FORMAT = "utf-8"
 CONFIG_INI = "config.ini"
