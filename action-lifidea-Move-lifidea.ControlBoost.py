@@ -69,12 +69,13 @@ def action_wrapper(hermes, intentMessage, conf):
             publish.single("lifidea/boost/request", "move left", hostname=MQTT_SERVER)
         if direction == b'right':
             publish.single("lifidea/boost/request", "move right", hostname=MQTT_SERVER)
-        if direction == b'front':
+        if direction in [b'front', b'forward']:
             publish.single("lifidea/boost/request", "move front", hostname=MQTT_SERVER)
-        if direction == b'back':
+        if direction == [b'back', b'backward']:
             publish.single("lifidea/boost/request", "move back", hostname=MQTT_SERVER)
-        else:
-            hermes.publish_continue_session(current_session_id, "Done!")
+        if direction == [b'around', b'circle']:
+            publish.single("lifidea/boost/request", "move around", hostname=MQTT_SERVER)
+        hermes.publish_continue_session(current_session_id, "Done!", [])
     finally:
         pass
         # mymovehub.stop()
