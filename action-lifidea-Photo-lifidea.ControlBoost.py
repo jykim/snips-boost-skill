@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import datetime
 import configparser
 from hermes_python.hermes import Hermes
 from hermes_python.ontology import *
@@ -60,8 +60,9 @@ def action_wrapper(hermes, intentMessage, conf):
     Refer to the documentation for further details. 
     """
     current_session_id = intentMessage.session_id
-    camera.capture('/home/pi/image.jpg')
+    camera.capture('/home/pi/image/image-%s.jpg' %  datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S") )
 
+    hermes.publish_continue_session(current_session_id, "Cheese!", ['lifidea:Photo'])
 
 if __name__ == "__main__":
     with Hermes("localhost:1883") as h:
