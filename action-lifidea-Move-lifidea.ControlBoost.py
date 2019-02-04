@@ -75,6 +75,8 @@ def action_wrapper(hermes, intentMessage, conf):
             publish.single("lifidea/boost/request", "move back", hostname=MQTT_SERVER)
         elif direction in [b'around', b'circle']:
             publish.single("lifidea/boost/request", "move around", hostname=MQTT_SERVER)
+        elif direction in [b'random', b'drunken']:
+            publish.single("lifidea/boost/request", "move random", hostname=MQTT_SERVER)
         else:
             hermes.publish_continue_session(current_session_id, "Unknown direction", ['lifidea:Move'])
             return

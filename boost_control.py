@@ -6,6 +6,7 @@ import json
 import time
 import os
 import subprocess
+from random import randint
 from picamera import PiCamera
 from time import sleep
 
@@ -34,6 +35,7 @@ def on_connect(client, userdata, flags, rc):
 
 UNIT_MOVE_MSEC = 500
 UNIT_MOVE_POWER = 50
+
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
@@ -49,6 +51,11 @@ def on_message(client, userdata, msg):
             mymovehub.run_motor_for_time(MOTOR_AB, UNIT_MOVE_MSEC, -UNIT_MOVE_POWER)
         elif msg.payload == b'move around':
             mymovehub.run_motors_for_time(MOTOR_AB, UNIT_MOVE_MSEC*2, UNIT_MOVE_POWER, -UNIT_MOVE_POWER)
+        elif msg.payload == b'move random':
+            for i in range(100):
+                print(i, randint(-50, 50))
+                mymovehub.run_motors_for_time(MOTOR_AB, UNIT_MOVE_MSEC, randint(-50*2, 50*2), randint(-50*2,50*2))
+                time.sleep(0.1)
         else:
             print("Direction unknown!")
     except Exception as e:
@@ -72,7 +79,7 @@ while(1):
 #        print("Image captured")
 #        if ov_out > 0:
 #            publish.single("lifidea/boost/response", '{"sideId": "default", "init":{"type":"action"}}')
-        time.sleep(1)
+        time.sleep(5)
     except:
         pdb.set_trace()
         
