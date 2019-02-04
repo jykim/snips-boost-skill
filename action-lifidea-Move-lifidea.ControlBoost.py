@@ -7,7 +7,7 @@ from hermes_python.ontology import *
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 import io
-
+import time
 CONFIGURATION_ENCODING_FORMAT = "utf-8"
 CONFIG_INI = "config.ini"
 
@@ -62,21 +62,26 @@ def action_wrapper(hermes, intentMessage, conf):
         direction = intentMessage.slots.direction.first().value.encode("utf-8")
         print(direction)
     else:
-        hermes.publish_continue_session(current_session_id, "No direction!", [])
+        hermes.publish_continue_session(current_session_id, "No direction!", ['lifidea:Move'])
         return
     try:
-        if direction == b'left':
+        if direction in [b'L', b'left']:
             publish.single("lifidea/boost/request", "move left", hostname=MQTT_SERVER)
-        if direction == b'right':
+        elif direction in [b'R', b'right']:
             publish.single("lifidea/boost/request", "move right", hostname=MQTT_SERVER)
-        if direction in [b'front', b'forward']:
+        elif direction in [b'front', b'forward']:
             publish.single("lifidea/boost/request", "move front", hostname=MQTT_SERVER)
-        if direction == [b'back', b'backward']:
+        elif direction in [b'back', b'backward']:
             publish.single("lifidea/boost/request", "move back", hostname=MQTT_SERVER)
-        if direction == [b'around', b'circle']:
+        elif direction in [b'around', b'circle']:
             publish.single("lifidea/boost/request", "move around", hostname=MQTT_SERVER)
-        hermes.publish_continue_session(current_session_id, "Done!", [])
+        else:
+            hermes.publish_continue_session(current_session_id, "Unknown direction", ['lifidea:Move'])
+            return
+        
+        hermes.publish_continue_session(current_session_id, "Done!", ['lifidea:Move'])
     finally:
+        #time.sleep(1)
         pass
         # mymovehub.stop()
 
