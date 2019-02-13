@@ -5,18 +5,30 @@ from picamera import PiCamera
 import cv2
 import pdb
 
-agenet = cv2.dnn.readNet('models/age-gender-recognition-retail-0013.xml', 'models/age-gender-recognition-retail-0013.bin')
-agenet.setPreferableTarget(cv2.dnn.DNN_TARGET_MYRIAD)
+genet = cv2.dnn.readNet('models/age-gender-recognition-retail-0013.xml', 'models/age-gender-recognition-retail-0013.bin')
+genet.setPreferableTarget(cv2.dnn.DNN_TARGET_MYRIAD)
 
-def detect_agender(frame):
-    
+def detect_gender(frame):
     blob = cv2.dnn.blobFromImage(frame, size=(62, 62), ddepth=cv2.CV_8U)
-    agenet.setInput(blob)
-    out = agenet.forward()
+    genet.setInput(blob)
+    out = genet.forward()
     print(out)
     # pdb.set_trace()
     print("age: %2.2f" % out[0][0][0][0] * 100)
     print("pct_male: %2.2f" % out[0][1][0][0] * 100)
+    return out
+
+emonet = cv2.dnn.readNet('models/emotions-recognition-retail-0003.xml', 'models/emotions-recognition-retail-0003.bin')
+emonet.setPreferableTarget(cv2.dnn.DNN_TARGET_MYRIAD)
+
+def detect_emotion(frame):
+    blob = cv2.dnn.blobFromImage(frame, size=(62, 62), ddepth=cv2.CV_8U)
+    emonet.setInput(blob)
+    out = emonet.forward()
+    print(out)
+    # pdb.set_trace()
+    # print("age: %2.2f" % out[0][0][0][0] * 100)
+    # print("pct_male: %2.2f" % out[0][1][0][0] * 100)
     return out
 
 facenet = cv2.dnn.readNet('models/face-detection-adas-0001.xml', 'models/face-detection-adas-0001.bin')
@@ -45,8 +57,9 @@ def detect_face(frame, thr_conf=.5):
             # print(frame_face)
             frame_face_small = cv2.resize(frame_face, (62, 62))
             cv2.imshow("Cropped", frame_face_small)
-            agender = detect_agender(frame_face_small)
-            prediction = (conf, pred_boxpts, agender)
+            gender = detect_gender(frame_face_small)
+            emotion = detect_emotion(frame_face_small)
+            prediction = (conf, pred_boxpts, gender, emotion)
             predictions.append(prediction)
 
 
