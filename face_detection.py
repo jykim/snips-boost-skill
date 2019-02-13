@@ -1,19 +1,14 @@
-# USAGE
-# python realtime_facedetection.py --input videos/dive.mp4 --display 1
-
-running_on_rpi = False
-import os
-
-os_info = os.uname()
-if os_info[4][:3] == 'arm':
-    running_on_rpi = True
+#!/usr/bin/env python3
 
 # import the necessary packages
-from imutils.video import VideoStream
-from imutils.video import FPS
+import os
 import argparse
 import time
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+from imutils.video import FPS
 import cv2
+import pdb
 
 
 def predict(frame, net):
@@ -63,14 +58,6 @@ net.setPreferableTarget(cv2.dnn.DNN_TARGET_MYRIAD)
 # time.sleep(1)
 fps = FPS().start()
 
-
-# import the necessary packages
-from picamera.array import PiRGBArray
-from picamera import PiCamera
-import time
-import cv2
-import pdb
-
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -85,17 +72,13 @@ cnt = 0
 # capture frames from the camera
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     try:
-        # grab the raw NumPy array representing the image, then initialize the timestamp
-        # and occupied/unoccupied text
         image = frame.array
 
         # show the frame
-        # cv2.imshow("Frame", image)
         key = cv2.waitKey(1)
-        
+
         # clear the stream in preparation for the next frame
         rawCapture.truncate(0)
-        
 
         image_for_result = frame.array.copy()
 
@@ -132,9 +115,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
                     cv2.putText(image_for_result, label, (startX, y),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
 
-        # check if we should display the frame on the screen
-        # with prediction data (you can achieve faster FPS if you
-        # do not output to the screen)
         if args["display"] > 0:
             # display the frame to the screen
             cv2.imshow("Output", image_for_result)
