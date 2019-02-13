@@ -16,32 +16,54 @@ ap.add_argument("-c", "--confidence", default=.5,
                 help="confidence threshold")
 ap.add_argument("-d", "--display", type=int, default=0,
                 help="switch to display image on screen")
-ap.add_argument("-i", "--input", type=str,
+ap.add_argument("-i", "--input_image", type=str,
+                help="path to optional input image file")
+ap.add_argument("-v", "--input_video", type=str,
                 help="path to optional input video file")
 args = vars(ap.parse_args())
 
-cvu.init_picamera()
+camera, rawCapture = cvu.init_picamera()
+
+if args.get("input_video"):
+    print("[INFO] opening video file...")
+    vs = cv2.VideoCapture(args["input_video"])
+    frames = []
+    for i in range(100):
+        try:
+            frame = vs.read()[1]
+            # print(frame.shape)
+            frames.append(frame)
+        except AttributeError:
+            break
+    print("Read %d frames" % len(frames))
+elif args.get("input_image"):
+    frames = [cv2.imread(args["input_image"])]
+else:
+    frames = camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
 
 # time.sleep(1)
 fps = FPS().start()
 fcnt = 0
-for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+for frame in frames:
     try:
-        image = frame.array
+        if args.get("input_video") or args.get("input_image"):
+            image = frame
+        else:
+            image = frame.array
         key = cv2.waitKey(1)
 
         # clear the stream in preparation for the next frame
         rawCapture.truncate(0)
 
-        image_for_result = frame.array.copy()
+        image_for_result = image.copy()
 
         # use the NCS to acquire predictions
-        predictions = cvu.detect_face(frame.array)
+        predictions = cvu.detect_face(image)
         print("Prediction done")
         # loop over our predictions
         for (i, pred) in enumerate(predictions):
             # extract prediction data for readability
-            (pred_conf, pred_boxpts) = pred
+            (pred_conf, pred_boxpts, agender) = pred
 
             # filter out weak detections by ensuring the `confidence`
             # is greater than the minimum confidence
