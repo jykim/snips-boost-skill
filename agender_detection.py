@@ -50,7 +50,6 @@ for frame in frames:
             image = frame
         else:
             image = frame.array
-        key = cv2.waitKey(1)
 
         # clear the stream in preparation for the next frame
         rawCapture.truncate(0)
@@ -59,7 +58,6 @@ for frame in frames:
 
         # use the NCS to acquire predictions
         predictions = cvu.detect_face(image)
-        print("Prediction done")
         # loop over our predictions
         for (i, pred) in enumerate(predictions):
             # extract prediction data for readability
@@ -93,11 +91,7 @@ for frame in frames:
         if args["display"] > 0:
             # display the frame to the screen
             cv2.imshow("Output", image_for_result)
-            key = cv2.waitKey(1) & 0xFF
 
-            # if the `q` key was pressed, break from the loop
-            if key == ord("q"):
-                break
         if fcnt == 100:
             break
         else:

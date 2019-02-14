@@ -20,7 +20,7 @@ from time import sleep
 MY_MOVEHUB_ADD = '00:16:53:A1:6F:4F'
 MY_BTCTRLR_HCI = 'hci0'
 
-mymovehub = MoveHub(MY_MOVEHUB_ADD, 'BlueZ', MY_BTCTRLR_HCI)    
+mymovehub = MoveHub(MY_MOVEHUB_ADD, 'BlueZ', MY_BTCTRLR_HCI)
 mymovehub.start()
 mymovehub.subscribe_all()
 mymovehub.listen_hubtilt(MODE_HUBTILT_BASIC)
@@ -39,12 +39,14 @@ UNIT_MOVE_POWER = 50
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
-
+    cmd = json.loads(str(msg.payload))
+    print(cmd)
+    pdb.set_trace()
     try:
-        if msg.payload == b'move left':
-            mymovehub.run_motor_for_time(MOTOR_B, UNIT_MOVE_MSEC, UNIT_MOVE_POWER)
-        elif msg.payload == b'move right':
-            mymovehub.run_motor_for_time(MOTOR_A, UNIT_MOVE_MSEC, UNIT_MOVE_POWER)
+        if cmd['dir'] == 'left':
+            mymovehub.run_motor_for_time(MOTOR_B, cmd['time']*UNIT_MOVE_MSEC, UNIT_MOVE_POWER)
+        elif cmd['dir'] == 'right':
+            mymovehub.run_motor_for_time(MOTOR_A, cmd['time']*UNIT_MOVE_MSEC, UNIT_MOVE_POWER)
         elif msg.payload == b'move front':
             mymovehub.run_motor_for_time(MOTOR_AB, UNIT_MOVE_MSEC, UNIT_MOVE_POWER)
         elif msg.payload == b'move back':
@@ -82,5 +84,3 @@ while(1):
         time.sleep(5)
     except:
         pdb.set_trace()
-        
-
