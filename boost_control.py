@@ -33,20 +33,20 @@ def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     client.subscribe(MQTT_PATH_SS)
 
-UNIT_MOVE_MSEC = 500
+UNIT_MOVE_MSEC = 100
 UNIT_MOVE_POWER = 50
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
-    cmd = json.loads(str(msg.payload))
-    print(cmd)
-    pdb.set_trace()
+    # pdb.set_trace()
     try:
+        cmd = json.loads(msg.payload.decode())
+        print(cmd)
         if cmd['dir'] == 'left':
-            mymovehub.run_motor_for_time(MOTOR_B, cmd['time']*UNIT_MOVE_MSEC, UNIT_MOVE_POWER)
+            mymovehub.run_motor_for_time(MOTOR_B, int(cmd['time']*UNIT_MOVE_MSEC), UNIT_MOVE_POWER)
         elif cmd['dir'] == 'right':
-            mymovehub.run_motor_for_time(MOTOR_A, cmd['time']*UNIT_MOVE_MSEC, UNIT_MOVE_POWER)
+            mymovehub.run_motor_for_time(MOTOR_A, int(cmd['time']*UNIT_MOVE_MSEC), UNIT_MOVE_POWER)
         elif msg.payload == b'move front':
             mymovehub.run_motor_for_time(MOTOR_AB, UNIT_MOVE_MSEC, UNIT_MOVE_POWER)
         elif msg.payload == b'move back':

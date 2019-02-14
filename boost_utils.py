@@ -19,5 +19,5 @@ client.on_message = on_message
 
 client.connect(MQTT_SERVER, 1883, 60)
 
-def send_cmd(dir, time=1)
+def send_cmd(dir, time=1):
     publish.single(MQTT_PATH_SS, json.dumps({"dir":dir, "time":time}) , hostname=MQTT_SERVER)

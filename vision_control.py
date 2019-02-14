@@ -71,11 +71,12 @@ for frame in frames:
                                             pred_boxpts))
 
                 xloc, yloc, xsize, ysize = cvu.get_rel_pos_size(pred_boxpts)
+                print(xloc, yloc, xsize, ysize)
 
-                if xloc < 0.25:
-                    bu.send_cmd('left')
-                elif xloc < 0.75:
-                    bu.send_cmd('left')
+                if xloc < 0.4:
+                    bu.send_cmd('left', (0.5-xloc)*4)
+                elif xloc > 0.6:
+                    bu.send_cmd('right', (xloc-0.5)*4)
                     
                 if args["display"] > 0:
                     # build a label
@@ -85,10 +86,10 @@ for frame in frames:
             # display the frame to the screen
             cv2.imshow("Output", image_for_result)
 
-        if fcnt == 100:
-            break
-        else:
-            fcnt += 1
+        # if fcnt == 100:
+        #    break
+        # else:
+        #    fcnt += 1
         # update the FPS counter
         fps.update()
 

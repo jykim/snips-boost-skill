@@ -37,7 +37,8 @@ facenet.setPreferableTarget(cv2.dnn.DNN_TARGET_MYRIAD)
 FN_DIM = (672, 384)
 
 def detect_face(frame, thr_conf=.5, detect_extra=False):
-    blob = cv2.dnn.blobFromImage(frame, size=FN_DIM, ddepth=cv2.CV_8U)
+    frame_fit = cv2.resize(frame, FN_DIM)
+    blob = cv2.dnn.blobFromImage(frame_fit, size=FN_DIM, ddepth=cv2.CV_8U)
     facenet.setInput(blob)
     out = facenet.forward()
 
@@ -85,8 +86,9 @@ def anno_face(img, pred):
 
 
 def get_rel_pos_size(box):
-    xloc = (box[0][0]+box[1][0]) / 2
-    yloc = (box[0][1]+box[1][1]) / 2
+    print(box)
+    xloc = (box[0][0] + box[1][0]) / 2
+    yloc = (box[0][1] + box[1][1]) / 2
     xsize = (box[1][0] - box[0][0])
     ysize = (box[1][1] - box[0][1])
     return xloc / FN_DIM[0], yloc / FN_DIM[1], xsize / FN_DIM[0], ysize / FN_DIM[1]
