@@ -9,6 +9,7 @@ from imutils.video import FPS
 import cv2
 import pdb
 import cv_utils as cvu
+import boost_utils as bu
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -61,32 +62,24 @@ for frame in frames:
         # loop over our predictions
         for (i, pred) in enumerate(predictions):
             # extract prediction data for readability
-            (pred_conf, pred_boxpts, agender) = pred
+            (pred_conf, pred_boxpts) = pred
 
-            # filter out weak detections by ensuring the `confidence`
-            # is greater than the minimum confidence
             if pred_conf > args["confidence"]:
                 # print prediction to terminal
                 print("[INFO] Prediction #{}: confidence={}, "
                       "boxpoints={}".format(i, pred_conf,
                                             pred_boxpts))
 
-                # check if we should show the prediction data
-                # on the frame
+                xloc, yloc, xsize, ysize = cvu.get_rel_pos_size(pred_boxpts)
+
+                if xloc < 0.25:
+                    bu.send_cmd('left')
+                elif xloc < 0.75:
+                    bu.send_cmd('left')
+                    
                 if args["display"] > 0:
                     # build a label
-                    label = "person: {:.2f}%".format(pred_conf * 100)
-
-                    # extract information from the prediction boxpoints
-                    (ptA, ptB) = (pred_boxpts[0], pred_boxpts[1])
-                    (startX, startY) = (ptA[0], ptA[1])
-                    y = startY - 15 if startY - 15 > 15 else startY + 15
-
-                    # display the rectangle and label text
-                    cv2.rectangle(image_for_result, ptA, ptB,
-                                  (255, 0, 0), 2)
-                    cv2.putText(image_for_result, label, (startX, y),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+                    cvu.anno_face(image_for_result, pred)
 
         if args["display"] > 0:
             # display the frame to the screen
