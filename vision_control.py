@@ -73,10 +73,12 @@ for frame in frames:
                 xloc, yloc, xsize, ysize = cvu.get_rel_pos_size(pred_boxpts)
                 print(xloc, yloc, xsize, ysize)
 
-                if xloc < 0.4:
-                    bu.send_cmd('left', (0.5-xloc)*4)
-                elif xloc > 0.6:
-                    bu.send_cmd('right', (xloc-0.5)*4)
+                if xloc < 0.3:
+                    bu.send_cmd('left', (0.5-xloc)*6)
+                elif xloc > 0.7:
+                    bu.send_cmd('right', (xloc-0.5)*6)
+                elif xsize < 0.5:
+                    bu.send_cmd('front', 3)
                     
                 if args["display"] > 0:
                     # build a label

@@ -47,6 +47,8 @@ def on_message(client, userdata, msg):
             mymovehub.run_motor_for_time(MOTOR_B, int(cmd['time']*UNIT_MOVE_MSEC), UNIT_MOVE_POWER)
         elif cmd['dir'] == 'right':
             mymovehub.run_motor_for_time(MOTOR_A, int(cmd['time']*UNIT_MOVE_MSEC), UNIT_MOVE_POWER)
+        elif cmd['dir'] == 'front':
+            mymovehub.run_motor_for_time(MOTOR_AB, int(cmd['time']*UNIT_MOVE_MSEC), UNIT_MOVE_POWER)
         elif msg.payload == b'move front':
             mymovehub.run_motor_for_time(MOTOR_AB, UNIT_MOVE_MSEC, UNIT_MOVE_POWER)
         elif msg.payload == b'move back':
